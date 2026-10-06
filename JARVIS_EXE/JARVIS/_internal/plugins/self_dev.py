@@ -135,6 +135,10 @@ def _write_file(rel_path, content):
 def _create_plugin(name, description, content=None):
     if not name:
         return "Fehler: Plugin-Name fehlt."
+    from actions.code_helper import safety_check
+    blocked = safety_check(f"{name} {description or ''} {content or ''}")
+    if blocked:
+        return blocked
     safe_name = name.lower().replace(" ", "_").replace("-", "_")
     path = PLUGINS_DIR / f"{safe_name}.py"
     if path.exists():
@@ -187,6 +191,10 @@ def run(action="help", input="", **kwargs):
 def _create_action(name, description, content=None):
     if not name:
         return "Fehler: Action-Name fehlt."
+    from actions.code_helper import safety_check
+    blocked = safety_check(f"{name} {description or ''} {content or ''}")
+    if blocked:
+        return blocked
     safe_name = name.lower().replace(" ", "_").replace("-", "_")
     path = ACTIONS_DIR / f"{safe_name}.py"
     if path.exists():

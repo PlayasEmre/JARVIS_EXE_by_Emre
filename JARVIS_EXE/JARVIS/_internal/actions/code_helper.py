@@ -6,6 +6,35 @@ import time
 from pathlib import Path
 
 
+_BLOCKED_PATTERNS = [
+    r"keylog", r"key\s*log", r"screen\s*log",
+    r"ransom", r"encrypt.*files.*demand", r"crypto\s*lock",
+    r"trojan", r"backdoor", r"rootkit", r"botnet", r"rat\b",
+    r"reverse.?shell", r"bind.?shell", r"shell\s*code",
+    r"exploit", r"payload", r"inject.*sql", r"xss",
+    r"ddos", r"dos.?attack", r"flood.*server", r"stress.?test.*server",
+    r"crack.*password", r"brute\s*force", r"hash.*crack",
+    r"phish", r"fake.*login", r"credential.*harvest",
+    r"spyware", r"stalker", r"spy.*on",
+    r"cheat.*engine", r"aimbot", r"wallhack", r"esp.*hack",
+    r"game.*hack", r"speed.*hack", r"god.*mode.*hack",
+    r"memory.*edit.*game", r"inject.*dll", r"hook.*game",
+    r"bypass.*anti.?cheat", r"bypass.*vac", r"bypass.*eac",
+    r"virus", r"malware", r"worm\b.*spread",
+    r"steal.*data", r"exfiltrat", r"sniff.*password",
+    r"crypto.*miner(?!al)", r"coin.*miner", r"mine.*crypto",
+]
+_BLOCKED_RE = re.compile("|".join(_BLOCKED_PATTERNS), re.IGNORECASE)
+
+def safety_check(text: str) -> str | None:
+    """Return a rejection message if the request is unsafe, else None."""
+    if _BLOCKED_RE.search(text):
+        return ("Diesen Auftrag kann ich nicht ausfuehren. "
+                "JARVIS erstellt keine Schadsoftware, Cheats, Exploits "
+                "oder Programme die andere schaedigen koennten.")
+    return None
+
+
 def get_base_dir():
     if getattr(sys, "frozen", False):
         return Path(sys.executable).parent
@@ -300,6 +329,9 @@ def _build(description, language, output_path, args, timeout, speak=None, player
 def _write_action(description, language, output_path, player) -> str:
     if not description:
         return "Please describe what you want me to write, sir."
+    blocked = safety_check(description)
+    if blocked:
+        return blocked
     if player:
         player.write_log("[Code] Writing code...")
     try:
@@ -315,6 +347,9 @@ def _edit_action(file_path, instruction, player) -> str:
         return "Please provide a file path to edit, sir."
     if not instruction:
         return "Please describe what change to make, sir."
+    blocked = safety_check(instruction)
+    if blocked:
+        return blocked
 
     content, err = _read_file(file_path)
     if err:
