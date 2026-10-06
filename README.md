@@ -5,11 +5,17 @@ Version: Mark LV | Sprache: Deutsch/Englisch | Plattform: Windows (macOS/Linux k
 
 ---
 
-## Schnellstart
+## Schnellstart (EXE-Version)
 
-1. `install.bat` doppelklicken (installiert alles)
-2. Gemini API-Key eingeben (kostenlos: https://aistudio.google.com/apikey)
-3. `start.bat` doppelklicken
+1. **JARVIS.exe** doppelklicken — keine Installation noetig, Python ist bereits enthalten
+2. Beim ersten Start erscheint der **Setup-Wizard**:
+   - Gemini API-Key eingeben (kostenlos: https://aistudio.google.com/apikey)
+   - Name eingeben
+   - Stimme waehlen (Charon, Puck, Kore, Fenrir, Aoede)
+   - Optional: Discord, ngrok, Dashboard-PIN einrichten
+3. Fertig — JARVIS startet automatisch
+
+> **Selbstreparatur:** Falls eine Datei versehentlich geloescht wird, stellt JARVIS sie beim naechsten Start automatisch wieder her.
 
 ---
 
@@ -201,9 +207,17 @@ Version: Mark LV | Sprache: Deutsch/Englisch | Plattform: Windows (macOS/Linux k
 
 ---
 
+### Stimmenwechsel
+| Befehl | Beispiel |
+|--------|---------|
+| Stimme aendern | "Aendere deine Stimme zu Kore" |
+| Verfuegbare Stimmen | Charon (Standard), Puck, Kore, Fenrir, Aoede |
+
+---
+
 ## Konfiguration
 
-Alle Einstellungen in `config/api_keys.json`:
+Alle Einstellungen in `_internal\config\api_keys.json` (wird automatisch vom Setup-Wizard erstellt):
 
 | Einstellung | Beschreibung | Pflicht |
 |------------|-------------|--------|
