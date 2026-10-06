@@ -1,0 +1,55 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "mein jarvis",
+      "intents": [
+        {
+          "name": "JarvisCommandIntent",
+          "slots": [
+            {
+              "name": "command",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "sag {command}",
+            "mach {command}",
+            "bitte {command}",
+            "kannst du {command}",
+            "ich möchte {command}",
+            "frag {command}",
+            "starte {command}",
+            "spiel {command}",
+            "wie ist {command}",
+            "was ist {command}",
+            "erzähl mir {command}",
+            "suche {command}",
+            "öffne {command}",
+            "schließe {command}",
+            "schalte {command}",
+            "stelle {command}",
+            "zeig mir {command}",
+            "hilf mir mit {command}",
+            "erinnere mich an {command}"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        }
+      ]
+    }
+  }
+}
