@@ -97,6 +97,8 @@ def _gemini_search(query: str) -> str:
         raise
 
     text = ""
+    if not response.candidates:
+        raise ValueError("Gemini returned no candidates.")
     for part in response.candidates[0].content.parts:
         if hasattr(part, "text") and part.text:
             text += part.text
@@ -218,6 +220,8 @@ def _gemini_headlines(n: int = 5) -> tuple[list[str], str]:
         return [], ""
 
     raw = ""
+    if not response.candidates:
+        return [], ""
     for part in response.candidates[0].content.parts:
         if hasattr(part, "text") and part.text:
             raw += part.text
@@ -340,6 +344,26 @@ def _compare(items: list[str], aspect: str) -> str:
     return "\n".join(lines)
 
 
+def _monitor(query: str) -> str:
+    """Fetch latest updates on a topic — combines news + search for comprehensive monitoring."""
+    news_text = _news(query)
+    try:
+        search_text = _search(f"latest updates {query} today")
+    except Exception:
+        search_text = ""
+
+    parts = [f"Topic Monitor: {query}", "─" * 40]
+    if news_text and not news_text.startswith("No news"):
+        parts.append("\n📰 Latest News:")
+        parts.append(news_text)
+    if search_text:
+        parts.append("\n🔍 Latest Updates:")
+        parts.append(search_text)
+    if len(parts) == 2:
+        return f"No recent updates found for: {query}"
+    return "\n".join(parts)
+
+
 # ── Public entry point ─────────────────────────────────────────────────────────
 
 def web_search(
@@ -374,6 +398,8 @@ def web_search(
             return _research(query)
         if mode == "price":
             return _price(query)
+        if mode == "monitor":
+            return _monitor(query)
         return _search(query)
 
     except Exception as e:
@@ -384,7 +410,7 @@ def web_search(
 # ── Tool declaration (auto-discovered by core/action_loader.py) ──────────────
 TOOL = {
     "name": "web_search",
-    "description": "Searches the web. Use for ANY question about current facts, events, prices, or topics — always prefer this over guessing. Modes: 'search' (default), 'news' (latest headlines on a topic), 'research' (deep comprehensive answer), 'price' (product cost lookup), 'compare' (side-by-side comparison of items).",
+    "description": "Searches the web. Use for ANY question about current facts, events, prices, or topics — always prefer this over guessing. Modes: 'search' (default), 'news' (latest headlines on a topic), 'research' (deep comprehensive answer), 'price' (product cost lookup), 'compare' (side-by-side comparison of items), 'monitor' (track a topic — combines news + search for comprehensive updates).",
     "parameters": {
         "type": "OBJECT",
         "properties": {
@@ -394,7 +420,7 @@ TOOL = {
             },
             "mode": {
                 "type": "STRING",
-                "description": "search | news | research | price | compare"
+                "description": "search | news | research | price | compare | monitor"
             },
             "items": {
                 "type": "ARRAY",

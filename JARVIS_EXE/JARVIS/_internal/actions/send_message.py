@@ -316,11 +316,12 @@ def send_message(
 TOOL = {
     "name": "send_message",
     "description": (
-        "Sends a text message via WhatsApp, Telegram, or another messaging "
-        "platform. Write 'message_text' in the USER'S OWN LANGUAGE, exactly "
-        "what they asked to be said. If the result says the message was NOT "
-        "sent, repeat that plainly along with the reason it gives — never "
-        "tell the user a message was sent unless the result said it was."
+        "Sends a text message via WhatsApp, Telegram, Instagram, or Signal. "
+        "Use when the user says: 'schreib', 'schick', 'sende', 'nachricht an', "
+        "'send a message', 'text', 'write to'. Write 'message_text' in the "
+        "USER'S OWN LANGUAGE — exactly what they asked to be said. For Discord "
+        "messages use the discord_bot plugin instead. If the result says the "
+        "message was NOT sent, repeat that plainly — never claim success."
     ),
     "parameters": {
         "type": "OBJECT",
@@ -335,7 +336,7 @@ TOOL = {
             },
             "platform": {
                 "type": "STRING",
-                "description": "Platform: WhatsApp, Telegram, etc."
+                "description": "Platform: WhatsApp | Telegram | Instagram | Signal"
             }
         },
         "required": [

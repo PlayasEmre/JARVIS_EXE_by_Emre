@@ -157,7 +157,18 @@ def _user_profile() -> dict:
 def _type(text: str, interval: float = 0.03) -> str:
     _require_pyautogui()
     time.sleep(0.3)
-    pyautogui.typewrite(text, interval=interval)
+    if all(ch.isascii() for ch in text):
+        pyautogui.typewrite(text, interval=interval)
+    elif _PYPERCLIP:
+        pyperclip.copy(text)
+        paste_key = "command" if _get_os() == "mac" else "ctrl"
+        pyautogui.hotkey(paste_key, "v")
+    else:
+        for ch in text:
+            if ch.isascii():
+                pyautogui.typewrite(ch, interval=interval)
+            else:
+                pyautogui.press("space")
     return f"Typed: {text[:60]}{'…' if len(text) > 60 else ''}"
 
 
@@ -457,8 +468,13 @@ def computer_control(
                 amount=int(params.get("amount", 3)),
             )
 
-        if action == "copy":
+        if action in ("copy", "clipboard_read"):
             return _clipboard_get()
+
+        if action == "clipboard_clear":
+            if _PYPERCLIP:
+                pyperclip.copy("")
+            return "Clipboard cleared."
 
         if action == "paste":
             return _clipboard_paste(params.get("text", ""))
@@ -522,7 +538,7 @@ TOOL = {
         "properties": {
             "action": {
                 "type": "STRING",
-                "description": "type | smart_type | click | double_click | right_click | hotkey | press | scroll | move | copy | paste | screenshot | wait | clear_field | focus_window | screen_find | screen_click | random_data | user_data"
+                "description": "type | smart_type | click | double_click | right_click | hotkey | press | scroll | move | copy | clipboard_read | clipboard_clear | paste | screenshot | wait | clear_field | focus_window | screen_find | screen_click | random_data | user_data"
             },
             "text": {
                 "type": "STRING",

@@ -14,9 +14,13 @@ _log = logging.getLogger("jarvis.alexa")
 PLUGIN = {
     "name": "alexa_control",
     "description": (
-        "Control Amazon Alexa devices. Use when the user asks to play music on Alexa, "
-        "set Alexa volume, ask Alexa something, make Alexa announce something, "
-        "control smart home devices via Alexa, set Alexa timer, or anything Alexa-related."
+        "Control Amazon Alexa devices. Use when the user says: "
+        "'Alexa', 'Echo', 'spiel Musik', 'Musik abspielen', 'Alexa Lautstaerke', "
+        "'Alexa leiser', 'Alexa lauter', 'Alexa stopp', 'Alexa pause', "
+        "'Durchsage', 'Ankuendigung', 'announce', 'play music on Alexa', "
+        "'Alexa Timer', 'Alexa Routine', 'frag Alexa', 'ask Alexa', "
+        "'Alexa einrichten', 'Alexa setup', 'Alexa Status'. "
+        "Supports: speak, play_music, volume, pause, resume, stop, announce, routine, status, setup."
     ),
     "parameters": {
         "type": "OBJECT",

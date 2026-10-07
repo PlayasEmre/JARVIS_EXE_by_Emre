@@ -41,9 +41,20 @@ class WhatsAppTransport:
             pyautogui.hotkey("ctrl", "a")
             time.sleep(0.1)
 
-            # Type contact name character by character for reliability
-            for ch in contact:
-                pyautogui.typewrite(ch, interval=0.03) if ch.isascii() else pyautogui.write(ch)
+            # Type contact name — use clipboard for non-ASCII (Turkish, German, etc.)
+            if all(ch.isascii() for ch in contact):
+                pyautogui.typewrite(contact, interval=0.03)
+            else:
+                try:
+                    import pyperclip
+                    pyperclip.copy(contact)
+                    pyautogui.hotkey("ctrl", "v")
+                except ImportError:
+                    for ch in contact:
+                        if ch.isascii():
+                            pyautogui.typewrite(ch, interval=0.03)
+                        else:
+                            pyautogui.press("space")
             time.sleep(1.2)
 
             # Press Enter to select first matching contact
@@ -67,7 +78,12 @@ class WhatsAppTransport:
                 pyperclip.copy(message)
                 pyautogui.hotkey("ctrl", "v")
             except ImportError:
-                pyautogui.typewrite(message, interval=0.02)
+                if all(ch.isascii() for ch in message):
+                    pyautogui.typewrite(message, interval=0.02)
+                else:
+                    import subprocess
+                    subprocess.run(["powershell", "-c", f"Set-Clipboard '{message.replace(chr(39), chr(39)+chr(39))}'"], capture_output=True)
+                    pyautogui.hotkey("ctrl", "v")
 
             time.sleep(0.3)
             pyautogui.press("enter")

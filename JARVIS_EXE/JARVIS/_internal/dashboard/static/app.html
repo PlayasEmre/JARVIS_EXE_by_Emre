@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0a0e17">
+  <meta name="format-detection" content="telephone=no">
   <link rel="manifest" href="/static/manifest.json">
   <link rel="apple-touch-icon" href="/static/icon-192.png">
   <title>JARVIS Dashboard</title>
@@ -20,14 +22,14 @@
       --mt:#4a6a7a;
       --safe-b:env(safe-area-inset-bottom,0px);
     }
-    html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Segoe UI','Courier New',Consolas,monospace;overflow:hidden;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Courier New',Consolas,monospace;overflow:hidden;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;touch-action:manipulation}
 
     /* ── LAYOUT ── */
     .app{display:grid;grid-template-rows:auto 1fr auto;height:100%}
     .main-area{display:grid;grid-template-columns:350px 1fr 380px;overflow:hidden;min-height:0}
 
     /* ── HEADER ── */
-    header{display:flex;align-items:center;padding:0 20px;height:52px;border-bottom:1px solid var(--bd);background:var(--bg);flex-shrink:0}
+    header{display:flex;align-items:center;padding:0 20px;padding-top:env(safe-area-inset-top,0px);height:calc(52px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--bd);background:var(--bg);flex-shrink:0}
     .logo{font-size:16px;font-weight:700;letter-spacing:7px;color:var(--ac);text-shadow:0 0 12px rgba(0,232,255,0.3);font-family:'Courier New',monospace}
     .badge{display:flex;align-items:center;gap:5px;margin-left:12px;padding:3px 12px;border-radius:99px;background:var(--gn-d);border:1px solid rgba(0,255,153,0.25);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--gn);text-transform:uppercase}
     .dot{width:6px;height:6px;border-radius:50%;background:var(--gn);animation:pulse 2s infinite}
@@ -126,7 +128,7 @@
     .cv-btn{padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;letter-spacing:.5px;cursor:pointer;border:1px solid var(--bd);background:var(--sf);color:var(--tx-d);transition:all .15s;font-family:inherit}
     .cv-btn:hover{color:var(--ac);border-color:var(--ac-d)}
 
-    .feed{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+    .feed{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
     .feed::-webkit-scrollbar{width:2px}.feed::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
     .msg{max-width:88%;padding:10px 13px;border-radius:12px;font-size:12px;line-height:1.55;animation:pop .15s ease;word-break:break-word}
     @keyframes pop{from{opacity:0;transform:translateY(3px)}}
@@ -164,11 +166,12 @@
     /* ══ MOBILE ══ */
     .mob-tabs{display:none}
     .mob-qk{display:none}
+    .mob-orb{display:none}
 
     @media(max-width:900px){
       .main-area{grid-template-columns:1fr;grid-template-rows:1fr;min-height:0;overflow:hidden}
-      .sb-l{display:none;border-right:none;overflow-y:auto;padding:8px}
-      #chat-area{min-height:0;max-height:100%;overflow:hidden}
+      .sb-l{display:none;border-right:none;overflow-y:auto;padding:8px;-webkit-overflow-scrolling:touch}
+      #chat-area{min-height:0;max-height:100%;overflow:hidden;display:flex;flex-direction:column}
       #chat-area .feed{min-height:0}
       .center{display:none}
       .sb-r{border-left:none}
@@ -176,58 +179,74 @@
       .hdr-r{gap:8px}
       .hdr-gear{font-size:16px}
 
-      /* Mobile quick actions bar */
-      .mob-qk{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--bd);overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
+      /* ── Minimal header like Jarvis app ── */
+      header{height:calc(44px + env(safe-area-inset-top,0px));padding:0 16px;padding-top:env(safe-area-inset-top,0px);background:#000;border-bottom:none}
+      .logo{font-size:15px;letter-spacing:6px;color:#fff}
+      .badge{font-size:7px;margin-left:8px;padding:2px 8px;background:rgba(120,100,255,.12);border-color:rgba(120,100,255,.3);color:#8b7aff}
+      .badge .dot{background:#8b7aff}
+
+      /* ── Orb area (shown in chat tab) ── */
+      .mob-orb{display:flex;flex-direction:column;align-items:center;padding:16px 0 8px;flex-shrink:0}
+      .mob-orb canvas{width:140px;height:140px}
+      .mob-orb .orb-status{font-size:11px;color:rgba(139,122,255,.7);margin-top:6px;letter-spacing:1px;font-weight:600}
+
+      /* ── Chat messages — dark minimal ── */
+      .feed{background:#000;padding:8px 16px;gap:10px}
+      .cv-h{display:none}
+      .msg{font-size:14px;padding:12px 16px;max-width:85%;border-radius:18px;line-height:1.5}
+      .msg-j{background:#1a1a2e;border:none;border-bottom-left-radius:4px;color:#e0e0e0}
+      .msg-u{background:rgba(120,100,255,.15);border:1px solid rgba(120,100,255,.2);border-bottom-right-radius:4px;color:#e8e4ff}
+      .msg-sys{font-size:10px;color:rgba(255,255,255,.3);padding:4px 0}
+      .msg-time{color:rgba(255,255,255,.2)}
+
+      /* ── Quick suggestion chips ── */
+      .mob-qk{display:flex;gap:8px;padding:10px 16px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;background:#000}
       .mob-qk::-webkit-scrollbar{display:none}
-      .mob-qk .mqb{white-space:nowrap;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:600;letter-spacing:.3px;cursor:pointer;border:1px solid var(--bd);background:var(--sf);color:var(--tx-d);font-family:inherit;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-      .mob-qk .mqb:active{color:var(--ac);border-color:var(--ac-d);background:var(--ac-gg)}
+      .mob-qk .mqb{white-space:nowrap;padding:10px 16px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);font-family:inherit;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:all .15s}
+      .mob-qk .mqb:active{color:#8b7aff;border-color:rgba(120,100,255,.4);background:rgba(120,100,255,.1);transform:scale(.96)}
 
-      /* Bottom tab bar */
-      .mob-tabs{display:flex;border-top:1px solid var(--bd);background:var(--sf);padding-bottom:var(--safe-b);flex-shrink:0}
-      .mob-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 8px;cursor:pointer;border:none;background:transparent;color:var(--mt);font-family:inherit;font-size:10px;font-weight:600;letter-spacing:.4px;-webkit-tap-highlight-color:transparent;transition:color .15s}
-      .mob-tab .mti{font-size:20px}
-      .mob-tab.active{color:var(--ac)}
-      .mob-tab:active{color:var(--ac)}
+      /* ── Input area with big mic button ── */
+      .cv-in{padding:8px 16px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));gap:8px;background:#000;border-top:none}
+      .cv-in input{padding:14px 18px;font-size:15px;border-radius:24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#fff}
+      .cv-in input::placeholder{color:rgba(255,255,255,.25)}
+      .cv-in input:focus{border-color:rgba(120,100,255,.4);background:rgba(120,100,255,.06)}
+      .snd-btn{width:42px;height:42px;font-size:16px;background:#8b7aff;border-radius:50%}
+      .mic-sm{width:52px;height:52px;font-size:22px;background:rgba(120,100,255,.15);border:2px solid rgba(120,100,255,.5);color:#8b7aff;border-radius:50%}
+      .mic-sm.rec{width:52px;height:52px;background:rgba(255,60,80,.15);border-color:rgba(255,60,80,.5);color:#ff3c50;animation:mp 1s infinite}
+      .att-btn{width:42px;height:42px;font-size:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4)}
+      .att-btn:active{border-color:rgba(120,100,255,.4);color:#8b7aff}
 
-      /* Header compact */
-      header{height:48px;padding:0 12px}
-      .logo{font-size:13px;letter-spacing:4px}
-      .badge{font-size:7px;margin-left:6px;padding:2px 7px}
+      /* ── Bottom tab bar ── */
+      .mob-tabs{display:flex;border-top:1px solid rgba(255,255,255,.06);background:#0a0a0f;padding-bottom:env(safe-area-inset-bottom,0px);flex-shrink:0}
+      .mob-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 8px;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.3);font-family:inherit;font-size:9px;font-weight:600;letter-spacing:.5px;-webkit-tap-highlight-color:transparent;transition:color .15s}
+      .mob-tab .mti{font-size:22px}
+      .mob-tab.active{color:#8b7aff}
+      .mob-tab:active{color:#8b7aff}
 
-      /* Bigger touch targets for all buttons */
-      .qa-btn{padding:10px 14px;border-radius:8px;font-size:11px;min-height:40px;display:inline-flex;align-items:center;-webkit-tap-highlight-color:transparent}
-      .qa-btn:active{color:var(--ac);border-color:var(--ac-d);background:var(--ac-gg);transform:scale(.96)}
+      /* ── Bigger touch targets for panels ── */
+      .qa-btn{padding:10px 14px;border-radius:12px;font-size:11px;min-height:44px;display:inline-flex;align-items:center;-webkit-tap-highlight-color:transparent;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.5)}
+      .qa-btn:active{color:#8b7aff;border-color:rgba(120,100,255,.4);background:rgba(120,100,255,.08);transform:scale(.96)}
 
-      /* Panels spacing */
-      .pn{border-radius:12px}
-      .pn-h{padding:12px 14px;min-height:44px}
-      .pn-t{font-size:12px}
-      .pn-b{padding:10px 12px}
-
-      /* Conversation input area */
-      .cv-in{padding:8px 10px 8px;gap:6px}
-      .cv-in input{padding:12px 14px;font-size:15px;border-radius:12px}
-      .snd-btn{width:42px;height:42px;font-size:16px}
-      .mic-sm{width:48px;height:48px;font-size:20px;background:var(--ac-g);border-color:var(--ac-d)}
-      .mic-sm.rec{width:48px;height:48px;animation:mp 1s infinite}
-      .att-btn{width:42px;height:42px;font-size:16px}
-
-      /* Chat messages */
-      .msg{font-size:13px;padding:10px 14px;max-width:90%;border-radius:14px}
+      /* ── Panels spacing ── */
+      .pn{border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+      .pn-h{padding:14px 16px;min-height:48px;border-bottom:1px solid rgba(255,255,255,.04)}
+      .pn-t{font-size:13px;color:#8b7aff}
+      .pn-b{padding:12px 14px}
 
       /* Stats grid */
-      .sx{padding:10px 6px}
-      .sx-v{font-size:15px}
-      .sx-l{font-size:9px}
+      .sx{padding:10px 8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px}
+      .sx-v{font-size:16px}
+      .sx-l{font-size:9px;color:rgba(255,255,255,.3)}
 
-      /* Conversation header */
-      .cv-h{padding:10px 12px}
-      .cv-t{font-size:15px}
-      .cv-btn{padding:6px 12px;font-size:10px}
+      /* File messages */
+      .msg-file{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px}
 
       /* Mobile tab views */
-      .sb-l.mob-show{display:flex!important}
+      .sb-l.mob-show{display:flex!important;background:#000}
       .sb-r.mob-hide{display:none!important}
+
+      /* Toast */
+      #toast{background:rgba(120,100,255,.15);border:1px solid rgba(120,100,255,.3);color:#8b7aff}
     }
 
     @media(min-width:901px)and(max-width:1280px){
@@ -457,9 +476,15 @@
           <span class="pn-arr">&#9660;</span>
         </div>
         <div class="pn-b">
+          <div class="ps"><span class="ps-dot off" id="ts-dot"></span><span class="ps-name">Tailscale</span><span class="ps-info" id="ts-info">Pruefen...</span></div>
+          <div id="ts-url-box" style="display:none;margin-top:6px;padding:8px;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;word-break:break-all">
+            <div style="font-size:8px;color:var(--tx-d);letter-spacing:1px;margin-bottom:3px">TAILSCALE URL (ueberall erreichbar)</div>
+            <a id="ts-url" style="font-size:11px;color:var(--ac);text-decoration:none;font-weight:700" href="#" target="_blank"></a>
+          </div>
+          <div style="margin-top:8px"></div>
           <div class="ps"><span class="ps-dot off" id="ng-dot"></span><span class="ps-name">ngrok Tunnel</span><span class="ps-info" id="ng-info">Pruefen...</span></div>
           <div id="ng-url-box" style="display:none;margin-top:6px;padding:8px;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;word-break:break-all">
-            <div style="font-size:8px;color:var(--tx-d);letter-spacing:1px;margin-bottom:3px">HANDY-URL (auch mit mobilen Daten)</div>
+            <div style="font-size:8px;color:var(--tx-d);letter-spacing:1px;margin-bottom:3px">NGROK URL (mobiles Internet)</div>
             <a id="ng-url" style="font-size:11px;color:var(--ac);text-decoration:none;font-weight:700" href="#" target="_blank"></a>
           </div>
           <div style="font-size:8px;color:var(--mt);margin-top:4px" id="ng-hint">pip install pyngrok</div>
@@ -511,16 +536,21 @@
           <button class="cv-btn" onclick="extractChat()">&#128229; Extract Conversation</button>
         </div>
       </div>
+      <!-- Mobile orb -->
+      <div class="mob-orb" id="mob-orb">
+        <canvas id="mob-orb-cvs" width="280" height="280"></canvas>
+        <div class="orb-status" id="mob-orb-status">Bereit</div>
+      </div>
       <div class="feed" id="feed"></div>
 
       <div class="mob-qk" id="mob-qk">
-        <button class="mqb" onclick="sendCmd('Mach einen Screenshot')">&#128247; Screenshot</button>
         <button class="mqb" onclick="sendCmd('Wie ist das Wetter?')">&#9729; Wetter</button>
-        <button class="mqb" onclick="sendCmd('Discord Status')">&#128172; Discord</button>
-        <button class="mqb" onclick="sendCmd('PC sperren')">&#128274; Sperren</button>
-        <button class="mqb" onclick="sendCmd('system status')">&#128200; System</button>
+        <button class="mqb" onclick="sendCmd('Mach einen Screenshot')">&#128247; Screenshot</button>
+        <button class="mqb" onclick="sendCmd('Erinnere mich in 30 Minuten')">&#9200; Timer</button>
+        <button class="mqb" onclick="sendCmd('Suche nach aktuellen Nachrichten')">&#128269; News</button>
+        <button class="mqb" onclick="sendCmd('PC sperren')">&#128274; PC sperren</button>
         <button class="mqb" onclick="sendCmd('Lautstaerke stumm')">&#128263; Stumm</button>
-        <button class="mqb" onclick="sendCmd('Zeig laufende Prozesse')">&#128187; Prozesse</button>
+        <button class="mqb" onclick="sendCmd('system status')">&#128200; System</button>
         <button class="mqb" onclick="sendCmd('Oeffne Chrome')">&#127760; Chrome</button>
       </div>
 
@@ -615,14 +645,17 @@ function mobTab(tab){
   // hide all sidebar panels first
   sidebar.querySelectorAll('.pn').forEach(p=>{p.style.display='none'});
 
+  const orb=document.getElementById('mob-orb');
   if(tab==='chat'){
     chatArea.classList.remove('mob-hide');
     sidebar.classList.remove('mob-show');
     if(qk)qk.style.display='';
+    if(orb)orb.style.display='';
   } else {
     chatArea.classList.add('mob-hide');
     sidebar.classList.add('mob-show');
     if(qk)qk.style.display='none';
+    if(orb)orb.style.display='none';
     let show=[];
     if(tab==='controls')show=_controlPanels;
     else if(tab==='stats')show=_statsPanels;
@@ -730,6 +763,19 @@ async function fetchRemoteUrl(){
     const dot=document.getElementById('ng-dot'),info=document.getElementById('ng-info');
     const box=document.getElementById('ng-url-box'),link=document.getElementById('ng-url');
     const hint=document.getElementById('ng-hint');
+    // Tailscale
+    const tsDot=document.getElementById('ts-dot'),tsInfo=document.getElementById('ts-info');
+    const tsBox=document.getElementById('ts-url-box'),tsLink=document.getElementById('ts-url');
+    if(d.tailscale_url){
+      if(tsDot)tsDot.className='ps-dot on';
+      if(tsInfo)tsInfo.textContent='Verbunden — '+d.tailscale_ip;
+      if(tsBox)tsBox.style.display='block';
+      if(tsLink){tsLink.textContent=d.tailscale_url;tsLink.href=d.tailscale_url}
+    } else {
+      if(tsDot)tsDot.className='ps-dot off';
+      if(tsInfo)tsInfo.textContent='Nicht erkannt';
+    }
+    // ngrok
     if(d.ngrok_url){
       if(dot)dot.className='ps-dot on';
       if(info)info.textContent='Verbunden';
@@ -978,7 +1024,85 @@ function _stopV(){
 function _setMicUI(on){
   if(micBtn){micBtn.innerHTML=on?'&#9209;':'&#127908;';micBtn.classList.toggle('rec',on)}
   if(micSm){micSm.innerHTML=on?'&#9209;':'&#127908;';micSm.classList.toggle('rec',on)}
+  if(window._setOrbActive)window._setOrbActive(on);
 }
+
+// ── Mobile Orb (wireframe sphere like Jarvis app) ──
+(function(){
+  const mc=document.getElementById('mob-orb-cvs');
+  if(!mc)return;
+  const ctx=mc.getContext('2d');
+  const W=mc.width,H=mc.height,cx=W/2,cy=H/2,R=W*.38;
+  let t=0,_orbActive=false;
+
+  function setOrbActive(v){_orbActive=v;const s=document.getElementById('mob-orb-status');if(s)s.textContent=v?'Hoere zu...':'Bereit'}
+  window._setOrbActive=setOrbActive;
+
+  function pt3d(lat,lon,r){
+    const x=r*Math.cos(lat)*Math.sin(lon);
+    const y=r*Math.sin(lat);
+    const z=r*Math.cos(lat)*Math.cos(lon);
+    const rz=z*Math.cos(t*.3)+x*Math.sin(t*.3);
+    const rx=x*Math.cos(t*.3)-z*Math.sin(t*.3);
+    const ry=y*Math.cos(t*.2)-rz*Math.sin(t*.2);
+    const rz2=rz*Math.cos(t*.2)+y*Math.sin(t*.2);
+    const sc=300/(300+rz2);
+    return{x:cx+rx*sc,y:cy+ry*sc,z:rz2,s:sc};
+  }
+
+  function drawOrb(){
+    ctx.clearRect(0,0,W,H);
+    const glow=_orbActive?.4:.15;
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,R*1.2);
+    g.addColorStop(0,'rgba(120,100,255,'+glow+')');
+    g.addColorStop(1,'rgba(120,100,255,0)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+
+    const lats=12,lons=18;
+    // latitude lines
+    for(let i=0;i<=lats;i++){
+      const lat=(i/lats)*Math.PI-Math.PI/2;
+      ctx.beginPath();
+      for(let j=0;j<=36;j++){
+        const lon=(j/36)*Math.PI*2;
+        const p=pt3d(lat,lon,R);
+        const a=Math.max(0,.15+p.s*.35);
+        if(j===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);
+      }
+      ctx.strokeStyle='rgba(139,122,255,.25)';ctx.lineWidth=.8;ctx.stroke();
+    }
+    // longitude lines
+    for(let j=0;j<lons;j++){
+      const lon=(j/lons)*Math.PI*2;
+      ctx.beginPath();
+      for(let i=0;i<=24;i++){
+        const lat=(i/24)*Math.PI-Math.PI/2;
+        const p=pt3d(lat,lon,R);
+        if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);
+      }
+      ctx.strokeStyle='rgba(139,122,255,.2)';ctx.lineWidth=.7;ctx.stroke();
+    }
+    // dots at intersections
+    for(let i=0;i<=lats;i++){
+      for(let j=0;j<lons;j++){
+        const lat=(i/lats)*Math.PI-Math.PI/2;
+        const lon=(j/lons)*Math.PI*2;
+        const p=pt3d(lat,lon,R);
+        if(p.z>-50){
+          const a=Math.min(1,.2+p.s*.5);
+          ctx.beginPath();ctx.arc(p.x,p.y,1.2*p.s,0,Math.PI*2);
+          ctx.fillStyle='rgba(139,122,255,'+a+')';ctx.fill();
+        }
+      }
+    }
+    t+=_orbActive?.025:.012;
+    requestAnimationFrame(drawOrb);
+  }
+  if(window.innerWidth<=900)drawOrb();
+  window.addEventListener('resize',function(){
+    if(window.innerWidth<=900&&!t)drawOrb();
+  });
+})();
 
 // ── PWA Service Worker ──
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}

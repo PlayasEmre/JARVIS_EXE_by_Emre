@@ -77,11 +77,15 @@ def _send_sync(text: str, channel_name: str = "") -> str:
     try:
         target_id = int(channel_id)
         if channel_name and _client.guilds:
+            found = False
             for guild in _client.guilds:
                 for ch in guild.text_channels:
                     if ch.name.lower() == channel_name.lower():
                         target_id = ch.id
+                        found = True
                         break
+                if found:
+                    break
 
         future = asyncio.run_coroutine_threadsafe(_send_message(target_id, text), _loop)
         future.result(timeout=10)

@@ -326,6 +326,27 @@ _ensure_crypto_js()
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
+def _tailscale_ip() -> str | None:
+    """Return this machine's Tailscale IPv4 address, or None."""
+    import subprocess as _sp
+    try:
+        r = _sp.run(["tailscale", "ip", "-4"], capture_output=True, text=True, timeout=5)
+        if r.returncode == 0:
+            ip = r.stdout.strip().split("\n")[0].strip()
+            if ip:
+                return ip
+    except (FileNotFoundError, Exception):
+        pass
+    try:
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            ip = info[4][0]
+            if ip.startswith("100."):
+                return ip
+    except Exception:
+        pass
+    return None
+
+
 def _local_ip() -> str:
     """Return the best LAN-facing IPv4 address, no internet required."""
     # Method 1: route trick (fast, works when internet is available)
@@ -458,6 +479,7 @@ class DashboardServer:
 
     def __init__(self):
         self._ip                          = _local_ip()
+        self._tailscale_ip                = _tailscale_ip()
         self._tokens: set[str]            = set()
         self._token_keys: dict[str, str]  = {}   # auth_token → session_key
         self._aes_cache:  dict[str, bytes]= {}   # session_key → AES bytes
@@ -830,11 +852,15 @@ setTimeout(function(){{location.replace('/')}},200);
                             break
                 except Exception:
                     pass
-            return JSONResponse({
+            resp = {
                 "ngrok_url": url,
                 "local_url": self.get_url(),
                 "local_ip": self._ip,
-            })
+            }
+            if self._tailscale_ip:
+                resp["tailscale_ip"] = self._tailscale_ip
+                resp["tailscale_url"] = f"http://{self._tailscale_ip}:{PORT}"
+            return JSONResponse(resp)
 
         @app.post("/api/alexa-skill")
         async def alexa_skill_ep(req: Request):
@@ -1090,6 +1116,9 @@ setTimeout(function(){{location.replace('/')}},200);
 
         proto = "https" if use_ssl else "http"
         print(f"[Dashboard] {proto}://{self._ip}:{PORT}")
+        if self._tailscale_ip:
+            print(f"[Dashboard] Tailscale: http://{self._tailscale_ip}:{PORT}")
+            print("[Dashboard] Oeffne diese URL auf dem Handy (Tailscale muss auf beiden Geraeten laufen)!")
         print("[Dashboard] Press 'Remote Control' in JARVIS UI to get the QR code.")
 
         # Start ngrok tunnel for remote access over mobile data

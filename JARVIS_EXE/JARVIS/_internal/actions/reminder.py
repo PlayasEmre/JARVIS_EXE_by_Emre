@@ -284,12 +284,42 @@ def _schedule_linux(target_dt: datetime, task_name: str,
     print("[Reminder] ❌ Neither systemd-run nor at found on this Linux system.")
     return ""
 
+def _run_timer(minutes: float, message: str, os_name: str):
+    import time as _time
+    _time.sleep(minutes * 60)
+    safe_msg = _sanitise(message)
+    task_name = f"JARVISTimer_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    script_path = _write_notify_script(task_name, safe_msg, os_name)
+    exec(script_path.read_text(encoding="utf-8"), {"__file__": str(script_path)})
+
+
 def reminder(
     parameters: dict,
     response=None,
     player=None,
     session_memory=None,
 ) -> str:
+
+    action   = parameters.get("action", "schedule").strip().lower()
+    duration = parameters.get("duration", "").strip()
+
+    if action == "timer" or duration:
+        try:
+            minutes = float(duration) if duration else 0
+        except ValueError:
+            return "I couldn't parse that duration. Please give me a number in minutes."
+        if minutes <= 0:
+            return "Timer duration must be positive."
+        message = parameters.get("message", "Timer abgelaufen!").strip()
+        import threading
+        threading.Thread(target=_run_timer, args=(minutes, message, _get_os()), daemon=True).start()
+        if minutes >= 60:
+            h = int(minutes // 60)
+            m = int(minutes % 60)
+            friendly = f"{h} hour{'s' if h > 1 else ''}" + (f" {m} minutes" if m else "")
+        else:
+            friendly = f"{int(minutes)} minute{'s' if minutes != 1 else ''}"
+        return f"Timer set for {friendly}."
 
     date_str = parameters.get("date", "").strip()
     time_str = parameters.get("time", "").strip()
@@ -340,26 +370,32 @@ def reminder(
 # ── Tool declaration (auto-discovered by core/action_loader.py) ──────────────
 TOOL = {
     "name": "reminder",
-    "description": "Sets a timed reminder using Task Scheduler.",
+    "description": "Sets a timed reminder or countdown timer. Use when the user says: 'erinnere mich', 'Timer', 'Wecker', 'in X Minuten', 'remind me', 'set a timer'. action='timer' + duration for countdowns ('erinnere mich in 30 Minuten'), action='schedule' + date+time for planned reminders ('erinnere mich morgen um 9').",
     "parameters": {
         "type": "OBJECT",
         "properties": {
+            "action": {
+                "type": "STRING",
+                "description": "schedule | timer (default: schedule)"
+            },
             "date": {
                 "type": "STRING",
-                "description": "Date in YYYY-MM-DD format"
+                "description": "Date in YYYY-MM-DD format (for schedule)"
             },
             "time": {
                 "type": "STRING",
-                "description": "Time in HH:MM format (24h)"
+                "description": "Time in HH:MM format 24h (for schedule)"
+            },
+            "duration": {
+                "type": "STRING",
+                "description": "Duration in minutes (for timer), e.g. '30' or '1.5'"
             },
             "message": {
                 "type": "STRING",
-                "description": "Reminder message text"
+                "description": "Reminder/timer message text"
             }
         },
         "required": [
-            "date",
-            "time",
             "message"
         ]
     },

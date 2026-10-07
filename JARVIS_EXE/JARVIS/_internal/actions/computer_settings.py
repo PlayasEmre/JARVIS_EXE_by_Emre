@@ -700,24 +700,41 @@ _DANGEROUS_ACTIONS = set(_IRREVERSIBLE)
 # out in full. What is left is spelling tolerance, and difflib does that in
 # microseconds instead of ~600 ms and a quota unit.
 _ALIASES = {
-    "volume_up":       ("louder", "raise volume", "turn it up", "increase volume"),
-    "volume_down":     ("quieter", "lower volume", "turn it down", "decrease volume"),
-    "mute":            ("silence", "sound off", "no sound"),
-    "brightness_up":   ("brighter", "raise brightness", "increase brightness"),
-    "brightness_down": ("dimmer", "dim", "lower brightness", "decrease brightness"),
-    "close_window":    ("close this", "close it"),
-    "full_screen":     ("fullscreen", "maximise screen"),
-    "show_desktop":    ("minimise everything", "go to desktop"),
-    "lock_screen":     ("lock", "lock the pc", "lock computer"),
-    "sleep_display":   ("screen off", "turn off the screen", "display off"),
-    "dark_mode":       ("night mode", "light mode", "toggle theme"),
-    "toggle_wifi":     ("wifi", "wi-fi", "internet off", "internet on"),
-    "task_manager":    ("processes", "task list"),
-    "screenshot":      ("capture screen", "take a screenshot", "snip"),
-    "refresh_page":    ("refresh", "reload page"),
-    "new_tab":         ("open a tab", "open new tab"),
-    "shutdown":        ("power off", "turn off the computer", "switch off the pc"),
-    "restart":         ("reboot", "restart the pc"),
+    "volume_up":       ("louder", "raise volume", "turn it up", "increase volume", "lauter", "lautstaerke hoch", "ton hoch"),
+    "volume_down":     ("quieter", "lower volume", "turn it down", "decrease volume", "leiser", "lautstaerke runter", "ton runter"),
+    "mute":            ("silence", "sound off", "no sound", "stumm", "stummschalten", "ton aus"),
+    "brightness_up":   ("brighter", "raise brightness", "increase brightness", "heller", "bildschirm heller", "helligkeit hoch"),
+    "brightness_down": ("dimmer", "dim", "lower brightness", "decrease brightness", "dunkler", "bildschirm dunkler", "helligkeit runter"),
+    "close_window":    ("close this", "close it", "fenster schliessen", "schliess das fenster"),
+    "close_app":       ("app schliessen", "programm schliessen", "beenden"),
+    "full_screen":     ("fullscreen", "maximise screen", "vollbild"),
+    "minimize":        ("minimiere", "minimiere das fenster", "fenster minimieren"),
+    "maximize":        ("maximiere", "maximiere das fenster", "fenster maximieren"),
+    "snap_left":       ("fenster links", "snap links"),
+    "snap_right":      ("fenster rechts", "snap rechts"),
+    "show_desktop":    ("minimise everything", "go to desktop", "desktop anzeigen", "alle minimieren"),
+    "lock_screen":     ("lock", "lock the pc", "lock computer", "bildschirm sperren", "sperr den bildschirm", "pc sperren"),
+    "sleep_display":   ("screen off", "turn off the screen", "display off", "bildschirm aus"),
+    "dark_mode":       ("night mode", "light mode", "toggle theme", "dunkelmodus", "nachtmodus", "helles design"),
+    "toggle_wifi":     ("wifi", "wi-fi", "internet off", "internet on", "wlan", "wlan aus", "wlan an"),
+    "task_manager":    ("processes", "task list", "task-manager", "prozesse anzeigen"),
+    "screenshot":      ("capture screen", "take a screenshot", "snip", "bildschirmfoto", "screenshot machen"),
+    "refresh_page":    ("refresh", "reload page", "seite neu laden", "aktualisieren"),
+    "new_tab":         ("open a tab", "open new tab", "neuer tab"),
+    "close_tab":       ("tab schliessen", "schliess den tab"),
+    "shutdown":        ("power off", "turn off the computer", "switch off the pc", "herunterfahren", "pc ausschalten", "fahr runter"),
+    "restart":         ("reboot", "restart the pc", "neustart", "pc neustarten", "neu starten"),
+    "copy":            ("kopieren", "kopiere das"),
+    "paste":           ("einfuegen", "fueg ein"),
+    "select_all":      ("alles markieren", "alles auswaehlen"),
+    "save":            ("speichern", "speicher das"),
+    "find_on_page":    ("suche auf seite", "auf seite suchen"),
+    "scroll_up":       ("hoch scrollen", "nach oben"),
+    "scroll_down":     ("runter scrollen", "nach unten"),
+    "zoom_in":         ("reinzoomen", "groesser"),
+    "zoom_out":        ("rauszoomen", "kleiner"),
+    "file_explorer":   ("datei-explorer", "explorer oeffnen", "dateien oeffnen"),
+    "open_settings":   ("einstellungen", "einstellungen oeffnen"),
 }
 
 _VALUE_ACTIONS = {"volume_set", "type_text", "press_key", "reload_n",
@@ -749,7 +766,7 @@ def _detect_action(description: str) -> dict:
 
     # 2. "set volume to 30", "sesi 30 yap" — a number next to a volume word.
     num = re.search(r"(\d{1,3})\s*%?", low)
-    if num and any(w in low for w in ("volume", "ses", "sound", "lautstark", "громкость")):
+    if num and any(w in low for w in ("volume", "ses", "sound", "lautstark", "lautstaerke", "ton", "громкость")):
         return {"action": "volume_set", "value": max(0, min(100, int(num.group(1))))}
 
     # 3. Alias phrases.

@@ -43,8 +43,9 @@ def _parse_date(raw: str) -> str:
     lower = raw.lower()
     today = datetime.now()
 
-    if re.match(r"\d{4}-\d{2}-\d{2}", raw):
-        return raw
+    m = re.match(r"\d{4}-\d{2}-\d{2}", raw)
+    if m:
+        return m.group(0)
     for fmt in ("%d/%m/%Y", "%m/%d/%Y", "%d.%m.%Y", "%d-%m-%Y"):
         try:
             return datetime.strptime(raw, fmt).strftime("%Y-%m-%d")
@@ -67,8 +68,9 @@ def _parse_date(raw: str) -> str:
             f"Return ONLY the date string, nothing else.",
             tier=gemini.FAST,
         )
-        if re.match(r"\d{4}-\d{2}-\d{2}", result):
-            return result
+        m2 = re.match(r"\d{4}-\d{2}-\d{2}", result)
+        if m2:
+            return m2.group(0)
     except Exception as e:
         print(f"[FlightFinder] ⚠️ Gemini date parse failed: {e}")
 
@@ -362,7 +364,7 @@ def flight_finder(parameters: dict, player=None, speak=None) -> str:
 # ── Tool declaration (auto-discovered by core/action_loader.py) ──────────────
 TOOL = {
     "name": "flight_finder",
-    "description": "Searches Google Flights and speaks the best options.",
+    "description": "Searches for flights on Google Flights. Use when the user says: 'Flug suchen', 'Fluege von X nach Y', 'search flights', 'find flights', 'cheapest flight'. Shows best options with prices.",
     "parameters": {
         "type": "OBJECT",
         "properties": {

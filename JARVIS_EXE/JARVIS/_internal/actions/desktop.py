@@ -485,13 +485,13 @@ def desktop_control(
 # ── Tool declaration (auto-discovered by core/action_loader.py) ──────────────
 TOOL = {
     "name": "desktop_control",
-    "description": "Controls the desktop: wallpaper, organize, clean, list, stats.",
+    "description": "Controls the desktop: change wallpaper (Hintergrundbild aendern), organize files by type/date, clean up (Desktop aufraeumen), list contents, show stats. Use when the user says: 'Hintergrundbild', 'wallpaper', 'Desktop aufraeumen', 'was ist auf dem Desktop'.",
     "parameters": {
         "type": "OBJECT",
         "properties": {
             "action": {
                 "type": "STRING",
-                "description": "wallpaper | wallpaper_url | organize | clean | list | stats | task"
+                "description": "wallpaper | wallpaper_url | current_wallpaper | organize | clean | list | stats | task"
             },
             "path": {
                 "type": "STRING",

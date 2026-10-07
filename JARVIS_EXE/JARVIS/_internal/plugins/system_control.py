@@ -48,10 +48,6 @@ def run(parameters: dict, player=None, session_memory=None) -> str:
                 img.save(str(path))
                 return f"Screenshot gespeichert: {path}"
             except ImportError:
-                subprocess.run(["powershell", "-c",
-                                f"Add-Type -AssemblyName System.Windows.Forms;"
-                                f"[System.Windows.Forms.Screen]::PrimaryScreen"],
-                               capture_output=True)
                 return "Pillow nicht installiert. Installiere es mit: pip install Pillow"
 
         elif action == "processes":

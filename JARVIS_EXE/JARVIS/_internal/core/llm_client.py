@@ -339,14 +339,26 @@ def call_llm_text(
     Used by planner, executor, error_handler, code_helper, dev_agent.
     """
     url, default_model = get_llm_settings()
-    endpoint = f"{url}/api/chat"
     m        = model or default_model
+    provider = get_llm_provider()
 
     messages: list[dict] = []
     if system:
         messages.append({"role": "system", "content": system})
     messages.append({"role": "user", "content": prompt})
 
+    if provider == "openai":
+        endpoint = f"{url}/v1/chat/completions"
+        payload  = {"model": m, "messages": messages, "stream": False, "max_tokens": 600}
+        try:
+            resp = requests.post(endpoint, json=payload, timeout=timeout)
+            resp.raise_for_status()
+            return (resp.json().get("choices", [{}])[0]
+                    .get("message", {}).get("content") or "").strip()
+        except Exception as e:
+            raise RuntimeError(f"OpenAI-compatible text call failed: {e}")
+
+    endpoint = f"{url}/api/chat"
     payload = {"model": m, "messages": messages, "stream": False, "keep_alive": -1, "options": {"num_predict": 600}}
 
     try:

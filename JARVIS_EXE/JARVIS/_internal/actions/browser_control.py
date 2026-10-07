@@ -481,6 +481,8 @@ class _BrowserSession:
         self._loop.run_forever()
 
     async def _async_init(self):
+        if async_playwright is None:
+            raise RuntimeError("Playwright ist nicht installiert. Installiere es mit: pip install playwright && python -m playwright install")
         self._pw = await async_playwright().start()
 
     def run(self, coro, timeout: int = 60) -> str:
@@ -669,7 +671,8 @@ class _BrowserSession:
 
     async def search(self, query: str, engine: str = "google") -> str:
         base = _SEARCH_ENGINES.get(engine.lower(), _SEARCH_ENGINES["google"])
-        return await self.go_to(base + query.replace(" ", "+"))
+        from urllib.parse import quote_plus
+        return await self.go_to(base + quote_plus(query))
 
     async def click(self, selector: str = None, text: str = None) -> str:
         page = await self._get_page()

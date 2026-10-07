@@ -54,13 +54,17 @@ def _log(message: str, player=None) -> None:
 # ── Tool declaration (auto-discovered by core/action_loader.py) ──────────────
 TOOL = {
     "name": "weather_report",
-    "description": "Gives the weather report to user",
+    "description": "Shows the weather report. Use when the user asks: 'Wetter', 'Wie wird das Wetter', 'weather', 'Temperatur', 'Regen', 'forecast'. Opens a Google weather search for the given city.",
     "parameters": {
         "type": "OBJECT",
         "properties": {
             "city": {
                 "type": "STRING",
                 "description": "City name"
+            },
+            "time": {
+                "type": "STRING",
+                "description": "Time period (today, tomorrow, this week, etc.)"
             }
         },
         "required": [

@@ -299,6 +299,8 @@ def _run_project(run_command: str, project_dir: Path, timeout: int = 30) -> str:
     print(f"[DevAgent] 🚀 Running: {run_command}")
     try:
         parts = run_command.split()
+        if not parts:
+            return "No run command specified."
         if parts[0].lower() == "python":
             parts[0] = sys.executable
 
